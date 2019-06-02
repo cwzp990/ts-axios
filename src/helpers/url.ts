@@ -1,4 +1,4 @@
-import { isDate, isObject, encode } from './utils'
+import { isDate, isPlainObject, encode } from './utils'
 
 export function buildUrl(url: string, params?: any): string {
   // 没有传参数 则直接返回url
@@ -25,7 +25,7 @@ export function buildUrl(url: string, params?: any): string {
     values.forEach(val => {
       if (isDate(val)) {
         val = val.toISOString()
-      } else if (isObject(val)) {
+      } else if (isPlainObject(val)) {
         val = JSON.stringify(val)
       }
       parts.push(`${encode(key)}=${encode(val)}`)
