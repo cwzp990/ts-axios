@@ -1,12 +1,15 @@
+// 入口文件
+
 import { AxiosRequestConfig } from './types/index'
 import xhr from './xhr'
 import { buildUrl } from './helpers/url'
 import { transformRequest } from './helpers/data'
 import { processHeaders } from './helpers/header'
 
+// 主方法
 function axios(config: AxiosRequestConfig): void {
   processConfig(config)
-  xhr(config)
+  xhr(config) // xhr实例
 }
 
 function processConfig(config: AxiosRequestConfig): void {

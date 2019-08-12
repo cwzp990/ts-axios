@@ -22,13 +22,14 @@ app.use(webpackDevMiddleware(compiler, {
 
 app.use(webpackHotMiddleware(compiler))
 
-app.use(express.static(__dirname))
+app.use(express.static(__dirname)) // 静态资源目录
 
-app.use(bodyParser.json())
+app.use(bodyParser.json()) // 解析request body里的数据
 app.use(bodyParser.urlencoded({ extended: true }))
 
 const router = express.Router()
 
+// 后台接口
 router.get('/simple/get', function (req, res) {
   res.json({
     msg: 'hello world'

@@ -1,3 +1,5 @@
+// 接口类型(公共)
+
 export type Method =
   | 'get'
   | 'GET'
