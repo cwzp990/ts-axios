@@ -7,6 +7,7 @@ export default function xhr(config: AxiosRequestConfig): void {
   const request = new XMLHttpRequest()
   request.open(method.toUpperCase(), url, true)
   Object.keys(headers).forEach(key => {
+    // 没有request body时，不需要配置content-type属性
     if (data === null && key.toLowerCase() === 'content-type') {
       delete headers[key]
     } else {

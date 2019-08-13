@@ -13,6 +13,7 @@ function normalizeHeadersName(headers: any, normalizedName: string): void {
   })
 }
 
+// 传入的data为普通对象的话，需要将content-type设为application/json
 export function processHeaders(headers: any, data: any): any {
   normalizeHeadersName(headers, 'Content-Type')
   if (isPlainObject(data)) {

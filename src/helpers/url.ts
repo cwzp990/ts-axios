@@ -1,3 +1,5 @@
+// 传参处理
+
 import { isDate, isPlainObject, encode } from './utils'
 
 export function buildUrl(url: string, params?: any): string {
