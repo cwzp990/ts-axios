@@ -1,4 +1,5 @@
-import axios from '../../src/index'
+import axios, { AxiosError } from '../../src/index'
+import { AxiosError } from '../../src/helpers/error';
 
 // url地址错误
 axios({
@@ -37,6 +38,10 @@ axios({
   timeout: 2000
 }).then(res => {
   console.log(res)
-}).catch(err => {
+}).catch((err: AxiosError) => {
   console.log(err.message)
+  console.log(err.config)
+  console.log(err.code)
+  console.log(err.request)
+  console.log(err.isAxiosError)
 })

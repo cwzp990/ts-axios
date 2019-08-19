@@ -1,13 +1,13 @@
 // 入口文件
 
-import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from './types/index'
-import xhr from './xhr'
-import { buildUrl } from './helpers/url'
-import { transformRequest, transformResponse } from './helpers/data'
-import { processHeaders } from './helpers/header'
+import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from '../types/index'
+import xhr from '../xhr'
+import { buildUrl } from '../helpers/url'
+import { transformRequest, transformResponse } from '../helpers/data'
+import { processHeaders } from '../helpers/header'
 
 // 主方法
-function axios(config: AxiosRequestConfig): AxiosPromise {
+function dispatchRequest(config: AxiosRequestConfig): AxiosPromise {
   processConfig(config)
   // xhr实例
   return xhr(config).then(res => {
@@ -44,4 +44,4 @@ function transformResponseData(res: AxiosResponse): AxiosResponse {
   return res
 }
 
-export default axios
+export default dispatchRequest
