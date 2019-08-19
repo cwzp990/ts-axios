@@ -1,5 +1,4 @@
-import axios, { AxiosError } from '../../src/index'
-import { AxiosError } from '../../src/helpers/error';
+import axios from '../../src/axios'
 
 // url地址错误
 axios({
@@ -32,16 +31,16 @@ setTimeout(() => {
   })
 }, 5000)
 
-axios({
-  method: 'get',
-  url: '/error/timeout',
-  timeout: 2000
-}).then(res => {
-  console.log(res)
-}).catch((err: AxiosError) => {
-  console.log(err.message)
-  console.log(err.config)
-  console.log(err.code)
-  console.log(err.request)
-  console.log(err.isAxiosError)
-})
+// axios({
+//   method: 'get',
+//   url: '/error/timeout',
+//   timeout: 2000
+// }).then(res => {
+//   console.log(res)
+// }).catch((err: AxiosError) => {
+//   console.log(err.message)
+//   console.log(err.config)
+//   console.log(err.code)
+//   console.log(err.request)
+//   console.log(err.isAxiosError)
+// })
