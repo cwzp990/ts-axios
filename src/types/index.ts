@@ -17,7 +17,7 @@ export type Method =
   | 'PATCH'
 
 export interface AxiosRequestConfig {
-  url: string
+  url?: string
   method?: Method // 约束 传来的必须是规定的字符串
   data?: any
   params?: any
@@ -66,4 +66,5 @@ export interface Axios {
 // Axios混合接口
 export interface AxiosInstance extends Axios {
   (config: AxiosRequestConfig): AxiosPromise
+  (url: string, config?: AxiosRequestConfig): AxiosPromise // 函数重载，其实是对request函数进行扩展
 }

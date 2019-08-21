@@ -3,7 +3,13 @@ import dispatchRequest from "./dispatchRequest";
 
 // 发送请求核心代码
 export default class Axios {
-  request(config: AxiosRequestConfig): AxiosPromise {
+  request(url: any, config?: any): AxiosPromise {
+    if (typeof url === 'string') { // 函数重载
+      if (!config) config = {}
+      config.url = url
+    } else {
+      config = url
+    }
     return dispatchRequest(config)
   }
 
