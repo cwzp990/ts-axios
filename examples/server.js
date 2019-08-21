@@ -107,7 +107,7 @@ router.patch('/extend/patch', function (req, res) {
   res.json(req.body)
 })
 
-router.get('/extend/user', function(req,res) {
+router.get('/extend/user', function (req, res) {
   res.json({
     code: 0,
     message: 'ok',
@@ -115,6 +115,12 @@ router.get('/extend/user', function(req,res) {
       name: 'jack',
       age: 18
     }
+  })
+})
+
+router.get('/interceptor/get', function (req, res) {
+  res.json({
+    data: 'hello'
   })
 })
 
