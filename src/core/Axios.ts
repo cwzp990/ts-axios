@@ -1,6 +1,13 @@
-import { AxiosRequestConfig, AxiosPromise, Method, AxiosResponse, ResolvedFn, RejectedFn } from "../types";
+import {
+  AxiosRequestConfig,
+  AxiosPromise,
+  Method,
+  AxiosResponse,
+  ResolvedFn,
+  RejectedFn
+} from '../types'
 import InterceptorManager from './interceptorManager'
-import dispatchRequest from "./dispatchRequest";
+import dispatchRequest from './dispatchRequest'
 
 interface Interceptors {
   request: InterceptorManager<AxiosRequestConfig>
@@ -14,9 +21,12 @@ interface PromiseChain<T> {
 
 // 发送请求核心代码
 export default class Axios {
+  defaults: AxiosRequestConfig
+
   interceptors: Interceptors
 
-  constructor() {
+  constructor(initConfig: AxiosRequestConfig) {
+    this.defaults = initConfig // 添加默认属性
     this.interceptors = {
       request: new InterceptorManager<AxiosRequestConfig>(),
       response: new InterceptorManager<AxiosResponse>()
@@ -24,7 +34,8 @@ export default class Axios {
   }
 
   request(url: any, config?: any): AxiosPromise {
-    if (typeof url === 'string') { // 函数重载
+    if (typeof url === 'string') {
+      // 函数重载
       if (!config) config = {}
       config.url = url
     } else {
@@ -32,10 +43,12 @@ export default class Axios {
     }
 
     // 链式调用
-    const chain: PromiseChain<any>[] = [{
-      resolved: dispatchRequest,
-      rejected: undefined
-    }]
+    const chain: PromiseChain<any>[] = [
+      {
+        resolved: dispatchRequest,
+        rejected: undefined
+      }
+    ]
 
     this.interceptors.request.forEach(interceptor => {
       chain.unshift(interceptor)
@@ -84,17 +97,21 @@ export default class Axios {
   }
 
   _requestMethodWithoutData(method: Method, url: string, config?: AxiosRequestConfig) {
-    return this.request(Object.assign(config || {}, {
-      method,
-      url
-    }))
+    return this.request(
+      Object.assign(config || {}, {
+        method,
+        url
+      })
+    )
   }
 
   _requestMethodWithData(method: Method, url: string, data?: any, config?: AxiosRequestConfig) {
-    return this.request(Object.assign(config || {}, {
-      method,
-      url,
-      data
-    }))
+    return this.request(
+      Object.assign(config || {}, {
+        method,
+        url,
+        data
+      })
+    )
   }
 }
