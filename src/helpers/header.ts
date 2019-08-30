@@ -1,4 +1,4 @@
-import { isPlainObject } from './utils'
+import { isPlainObject, deepMerge } from './utils'
 import { Method } from '../types'
 
 function normalizeHeadersName(headers: any, normalizedName: string): void {
@@ -49,4 +49,5 @@ export function flattenHeaders(headers: any, method: Method): any {
   methodsToDelete.forEach(method => {
     delete headers[method]
   })
+  return headers
 }
