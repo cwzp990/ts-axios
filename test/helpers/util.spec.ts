@@ -63,7 +63,7 @@ describe('helpers:util', () => {
           bar: 123,
           baz: 456
         },
-        baz: {
+        bar: {
           qux: 789
         }
       })
