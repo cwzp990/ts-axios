@@ -52,5 +52,45 @@ describe('helpers:util', () => {
       expect(d.foo).toBe(789)
       expect(d.bar).toBe(456)
     })
+
+    test('should deepMerge recursively', () => {
+      const a = { foo: { bar: 123 } }
+      const b = { foo: { baz: 456 }, bar: { qux: 789 } }
+      const c = deepMerge(a, b)
+
+      expect(c).toEqual({
+        foo: {
+          bar: 123,
+          baz: 456
+        },
+        baz: {
+          qux: 789
+        }
+      })
+    })
+
+    test('should remove all refrence from nested objects', () => {
+      const a = { foo: { bar: 123 } }
+      const b = {}
+      const c = deepMerge(a, b)
+
+      expect(c).toEqual({
+        foo: {
+          bar: 123
+        }
+      })
+
+      expect(c.foo).not.toBe(a.foo)
+    })
+
+    test('should handle null and undefined arguments', () => {
+      expect(deepMerge(undefined, undefined)).toEqual({})
+      expect(deepMerge(undefined, { foo: 123 })).toEqual({ foo: 123 })
+      expect(deepMerge({ foo: 123 }, undefined)).toEqual({ foo: 123 })
+
+      expect(deepMerge(null, null)).toEqual({})
+      expect(deepMerge(null, { foo: 123 })).toEqual({ foo: 123 })
+      expect(deepMerge({ foo: 123 }, null)).toEqual({ foo: 123 })
+    })
   })
 })
