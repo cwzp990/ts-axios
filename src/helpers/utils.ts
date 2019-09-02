@@ -24,6 +24,7 @@ export function encode(val: string): string {
     .replace(/%5d/gi, ']')
 }
 
+// 后者覆盖前者
 export function extend<T, U>(to: T, from: U): T & U {
   for (const key in from) {
     ;(to as T & U)[key] = from[key] as any // 类型断言
