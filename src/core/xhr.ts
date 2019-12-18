@@ -1,13 +1,17 @@
 import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from '../types/index'
 import { parseHeaders } from '../helpers/headers'
+import { createError } from '../helpers/error'
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
-  return new Promise(resolve => {
-    let { url, method = 'get', data = null, headers, responseType } = config
+  return new Promise((resolve, reject) => {
+    let { url, method = 'get', data = null, headers, responseType, timeout } = config
 
     let xhr = new XMLHttpRequest()
 
     if (responseType) xhr.responseType = responseType
+
+    // 超时处理，默认为0
+    if (timeout) xhr.timeout = timeout
 
     xhr.open(method.toUpperCase(), url, true)
 
@@ -23,8 +27,16 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
         config,
         request: xhr
       }
-      // 响应Promise化
-      resolve(response)
+      // 响应结果Promise化
+      handleResponse(response)
+    }
+
+    xhr.onerror = function handleError() {
+      reject(createError('Network Error', config, null, xhr))
+    }
+
+    xhr.ontimeout = function handleTimeout() {
+      reject(createError(`Timeout of ${timeout} ms exceeded`, config, null, xhr))
     }
 
     // 需要将headers添加到xhr对象上
@@ -39,5 +51,16 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     })
 
     xhr.send(data)
+
+    function handleResponse(response: AxiosResponse): void {
+      const { status } = response
+      if (status === 200) {
+        resolve(response)
+      } else {
+        reject(
+          createError(`Request failed with status code ${status}`, config, null, xhr, response)
+        )
+      }
+    }
   })
 }
