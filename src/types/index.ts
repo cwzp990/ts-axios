@@ -25,8 +25,8 @@ export interface AxiosRequestConfig {
   timeout?: number
 }
 
-export interface AxiosResponse {
-  data: any
+export interface AxiosResponse<T = any> {
+  data: T
   status: number
   statusText: string
   headers: any
@@ -34,20 +34,32 @@ export interface AxiosResponse {
   request: any
 }
 
-export interface AxiosPromise extends Promise<AxiosResponse> {}
+export interface AxiosPromise<T = any> extends Promise<AxiosResponse<T>> {}
 
 export interface Axios {
-  request(config?: AxiosRequestConfig): AxiosResponse
-  get(url: string, config?: AxiosRequestConfig): AxiosResponse
-  delete(url: string, config?: AxiosRequestConfig): AxiosResponse
-  options(url: string, config?: AxiosRequestConfig): AxiosResponse
-  post(url: string, data?: any, config?: AxiosRequestConfig): AxiosResponse
-  put(url: string, data?: any, config?: AxiosRequestConfig): AxiosResponse
-  patch(url: string, data?: any, config?: AxiosRequestConfig): AxiosResponse
+  request<T = any>(config?: AxiosRequestConfig): AxiosResponse<T>
+  get<T = any>(url: string, config?: AxiosRequestConfig): AxiosResponse<T>
+  delete<T = any>(url: string, config?: AxiosRequestConfig): AxiosResponse<T>
+  options<T = any>(url: string, config?: AxiosRequestConfig): AxiosResponse<T>
+  post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): AxiosResponse<T>
+  put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): AxiosResponse<T>
+  patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): AxiosResponse<T>
 }
 
 export interface AxiosInstance extends Axios {
-  (config: AxiosRequestConfig): AxiosPromise
+  <T = any>(config: AxiosRequestConfig): AxiosPromise<T>
 
-  (url:string, config?:AxiosRequestConfig):AxiosPromise
+  <T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
+}
+
+export interface AxiosInterceptorManager<T> {
+  use(resolved: ResolvedFn<T>, rejected: RejectedFn): number // 每次创建一个拦截器会返回一个参数，用于以后删除
+}
+
+export interface ResolvedFn<T> {
+  (val: T): T | Promise<T> // 同步或者异步
+}
+
+export interface RejectedFn {
+  (error: any): any
 }
