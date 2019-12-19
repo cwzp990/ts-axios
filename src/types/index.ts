@@ -37,6 +37,13 @@ export interface AxiosResponse<T = any> {
 export interface AxiosPromise<T = any> extends Promise<AxiosResponse<T>> {}
 
 export interface Axios {
+  defaults: AxiosRequestConfig
+
+  interceptors: {
+    request: AxiosInterceptorManager<AxiosRequestConfig>
+    response:  AxiosInterceptorManager<AxiosPromise>
+  }
+
   request<T = any>(config?: AxiosRequestConfig): AxiosResponse<T>
   get<T = any>(url: string, config?: AxiosRequestConfig): AxiosResponse<T>
   delete<T = any>(url: string, config?: AxiosRequestConfig): AxiosResponse<T>

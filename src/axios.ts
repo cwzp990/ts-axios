@@ -1,10 +1,11 @@
-import Axios from "./core/axios";
-import { extend } from "./helpers/utils";
-import { AxiosInstance } from "./types";
+import Axios from './core/axios'
+import { extend } from './helpers/utils'
+import { AxiosInstance, AxiosRequestConfig } from './types'
+import defaults from './default'
 
 // 工厂函数
-function createInstance ():AxiosInstance {
-  const context = new Axios() // 实例化
+function createInstance(config: AxiosRequestConfig): AxiosInstance {
+  const context = new Axios(config) // 实例化
   const instance = Axios.prototype.request.bind(context)
 
   // axios属性需要拷贝到instance上
@@ -12,6 +13,6 @@ function createInstance ():AxiosInstance {
   return instance as AxiosInstance
 }
 
-const axios = createInstance()
+const axios = createInstance(defaults)
 
 export default axios
