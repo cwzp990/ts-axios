@@ -23,6 +23,8 @@ export interface AxiosRequestConfig {
   headers?: any
   responseType?: XMLHttpRequestResponseType
   timeout?: number
+  transformRequest?: AxiosTransformer[]
+  transformResponse?: AxiosTransformer[]
 
   [propName: string]: any
 }
@@ -61,6 +63,10 @@ export interface AxiosInstance extends Axios {
   <T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
 }
 
+export interface AxiosStatic extends AxiosInstance {
+  create(config: AxiosRequestConfig):AxiosInstance
+}
+
 export interface AxiosInterceptorManager<T> {
   use(resolved: ResolvedFn<T>, rejected: RejectedFn): number // 每次创建一个拦截器会返回一个参数，用于以后删除
 }
@@ -71,4 +77,8 @@ export interface ResolvedFn<T> {
 
 export interface RejectedFn {
   (error: any): any
+}
+
+export interface AxiosTransformer {
+  (data: any, headers?: any): any
 }

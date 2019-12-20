@@ -1,8 +1,8 @@
 import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from '../types/index'
 import xhr from './xhr'
 import { buildUrl } from '../helpers/url'
-import { transformRequest, transformResponse } from '../helpers/data'
-import { processHeaders, flattenHeaders } from '../helpers/headers'
+import { flattenHeaders } from '../helpers/headers'
+import transform from './transform'
 
 export default function dispatchRequest(config: AxiosRequestConfig): AxiosPromise {
   processConfig(config) // 对配置参数进行处理
@@ -13,10 +13,15 @@ export default function dispatchRequest(config: AxiosRequestConfig): AxiosPromis
 }
 
 function processConfig(config: AxiosRequestConfig): void {
+  const { data, headers, transformRequest, method } = config
   config.url = transformURL(config) // 对url参数进行处理
-  config.headers = transformHeaders(config) // 对headers进行处理
-  config.data = transformRequestData(config) // 对请求data做处理，对象需转换为JSON字符串
-  config.headers = flattenHeaders(config.headers, config.method!) // 需要添加的headers字段提取出来
+  // 对请求data做处理，对象需转换为JSON字符串
+  // config.data = transformRequestData(config)
+  config.data = transform(data, headers, transformRequest)
+
+  // 对headers进行处理
+  // config.headers = transformHeaders(config)
+  config.headers = flattenHeaders(headers, method!) // 需要添加的headers字段提取出来
 }
 
 function transformURL(config: AxiosRequestConfig): string {
@@ -24,17 +29,20 @@ function transformURL(config: AxiosRequestConfig): string {
   return buildUrl(url!, params)
 }
 
-function transformRequestData(config: AxiosRequestConfig): any {
-  const { data } = config
-  return transformRequest(data)
-}
+// 移到 defaults.ts 里实现了
+// function transformRequestData(config: AxiosRequestConfig): any {
+//   const { data } = config
+//   return transformRequest(data)
+// }
 
-function transformHeaders(config: AxiosRequestConfig): any {
-  const { headers = {}, data } = config
-  return processHeaders(headers, data)
-}
+// 移到 defaults.ts 里实现了
+// function transformHeaders(config: AxiosRequestConfig): any {
+//   const { headers = {}, data } = config
+//   return processHeaders(headers, data)
+// }
 
 function transformResponseData(res: AxiosResponse): AxiosResponse {
-  const { data } = res
-  return transformResponse(data)
+  const { data, headers, config } = res
+  res.data = transform(data, headers, config.transformResponse)
+  return res
 }
