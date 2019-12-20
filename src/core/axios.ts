@@ -8,6 +8,7 @@ import {
   RejectedFn
 } from '../types'
 import interceptorManagers from './interceptorManager'
+import mergeConfig from './mergeConfig'
 
 interface interceptors {
   request: interceptorManagers<AxiosRequestConfig>
@@ -46,6 +47,8 @@ export default class Axios {
     } else {
       config = url
     }
+
+    config = mergeConfig(this.defaults, config) // 合并配置
 
     const chain: PromiseChain<any>[] = [
       {

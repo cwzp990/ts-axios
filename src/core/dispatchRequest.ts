@@ -2,7 +2,7 @@ import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from '../types/index'
 import xhr from './xhr'
 import { buildUrl } from '../helpers/url'
 import { transformRequest, transformResponse } from '../helpers/data'
-import { processHeaders } from '../helpers/headers'
+import { processHeaders, flattenHeaders } from '../helpers/headers'
 
 export default function dispatchRequest(config: AxiosRequestConfig): AxiosPromise {
   processConfig(config) // 对配置参数进行处理
@@ -16,6 +16,7 @@ function processConfig(config: AxiosRequestConfig): void {
   config.url = transformURL(config) // 对url参数进行处理
   config.headers = transformHeaders(config) // 对headers进行处理
   config.data = transformRequestData(config) // 对请求data做处理，对象需转换为JSON字符串
+  config.headers = flattenHeaders(config.headers, config.method!) // 需要添加的headers字段提取出来
 }
 
 function transformURL(config: AxiosRequestConfig): string {
