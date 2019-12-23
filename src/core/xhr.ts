@@ -4,7 +4,16 @@ import { createError } from '../helpers/error'
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
-    let { url, method = 'get', data = null, headers, responseType, timeout, cancelToken } = config
+    let {
+      url,
+      method = 'get',
+      data = null,
+      headers,
+      responseType,
+      timeout,
+      cancelToken,
+      withCredentials
+    } = config
 
     let xhr = new XMLHttpRequest()
 
@@ -12,6 +21,9 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 
     // 超时处理，默认为0
     if (timeout) xhr.timeout = timeout
+
+    // 不同域是否携带cookie
+    if (withCredentials) xhr.withCredentials = withCredentials
 
     xhr.open(method.toUpperCase(), url!, true)
 
