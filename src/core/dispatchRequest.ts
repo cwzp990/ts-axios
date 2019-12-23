@@ -5,6 +5,7 @@ import { flattenHeaders } from '../helpers/headers'
 import transform from './transform'
 
 export default function dispatchRequest(config: AxiosRequestConfig): AxiosPromise {
+  throwIfCancellationRequested(config) // token存在不需要发送请求
   processConfig(config) // 对配置参数进行处理
   return xhr(config) // 发送http请求 响应Promise化
     .then(res => {
@@ -45,4 +46,8 @@ function transformResponseData(res: AxiosResponse): AxiosResponse {
   const { data, headers, config } = res
   res.data = transform(data, headers, config.transformResponse)
   return res
+}
+
+function throwIfCancellationRequested(config: AxiosRequestConfig): void {
+  if (config.cancelToken) config.cancelToken.throwIfRequested()
 }
