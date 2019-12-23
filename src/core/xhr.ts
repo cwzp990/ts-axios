@@ -2,6 +2,7 @@ import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from '../types/index'
 import { parseHeaders } from '../helpers/headers'
 import { createError } from '../helpers/error'
 import { isURLSameOrigin } from '../helpers/url'
+import { isFormData } from '../helpers/utils'
 import cookie from '../helpers/cookie'
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
@@ -16,7 +17,9 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       cancelToken,
       withCredentials,
       xsrfCookieName,
-      xsrfHeaderName
+      xsrfHeaderName,
+      onDownloadProgress,
+      onUploadProgress
     } = config
 
     let xhr = new XMLHttpRequest()
@@ -53,6 +56,14 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 
     xhr.ontimeout = function handleTimeout() {
       reject(createError(`Timeout of ${timeout} ms exceeded`, config, null, xhr))
+    }
+
+    if (onDownloadProgress) xhr.onprogress = onDownloadProgress
+    if (onUploadProgress) xhr.upload.onprogress = onUploadProgress
+
+    // 文件类型浏览器会自动添加centent-type字段
+    if (isFormData(data)) {
+      delete headers['Content-Type']
     }
 
     if ((withCredentials || isURLSameOrigin(url!)) && xsrfCookieName) {
