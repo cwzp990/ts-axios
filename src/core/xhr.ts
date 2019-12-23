@@ -19,7 +19,9 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       xsrfCookieName,
       xsrfHeaderName,
       onDownloadProgress,
-      onUploadProgress
+      onUploadProgress,
+      auth,
+      validateStatus
     } = config
 
     let xhr = new XMLHttpRequest()
@@ -89,6 +91,10 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
         }
       }
 
+      if (auth) {
+        headers['Authorization'] = `Basic ${btoa(`${auth.username} : ${auth.password}`)}`
+      }
+
       // 需要将headers添加到xhr对象上
       Object.keys(headers).forEach(key => {
         // data为null时，headers里的Content-Type没有意义，需要删除
@@ -112,7 +118,8 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 
     function handleResponse(response: AxiosResponse): void {
       const { status } = response
-      if (status === 200) {
+      // 根据自定义状态码判断
+      if (!validateStatus || validateStatus(status)) {
         resolve(response)
       } else {
         reject(
