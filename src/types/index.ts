@@ -1,13 +1,12 @@
-// 字符串字面量类型用来约束取值只能是某几个字符串中的一个
 export type Method =
   | 'get'
   | 'GET'
   | 'post'
   | 'POST'
-  | 'head'
-  | 'HEAD'
   | 'delete'
   | 'DELETE'
+  | 'head'
+  | 'HEAD'
   | 'options'
   | 'OPTIONS'
   | 'put'
@@ -23,8 +22,8 @@ export interface AxiosRequestConfig {
   headers?: any
   responseType?: XMLHttpRequestResponseType
   timeout?: number
-  transformRequest?: AxiosTransformer[]
-  transformResponse?: AxiosTransformer[]
+  transformRequest?: AxiosTransformer | AxiosTransformer[]
+  transformResponse?: AxiosTransformer | AxiosTransformer[]
   cancelToken?: CancelToken
   withCredentials?: boolean
   xsrfCookieName?: string
@@ -50,21 +49,39 @@ export interface AxiosResponse<T = any> {
 
 export interface AxiosPromise<T = any> extends Promise<AxiosResponse<T>> {}
 
+export interface AxiosError extends Error {
+  isAxiosError: boolean
+  config: AxiosRequestConfig
+  code?: string | null | number
+  request?: any
+  response?: AxiosResponse
+}
+
 export interface Axios {
   defaults: AxiosRequestConfig
 
   interceptors: {
     request: AxiosInterceptorManager<AxiosRequestConfig>
-    response: AxiosInterceptorManager<AxiosPromise>
+    response: AxiosInterceptorManager<AxiosResponse>
   }
 
-  request<T = any>(config?: AxiosRequestConfig): AxiosResponse<T>
-  get<T = any>(url: string, config?: AxiosRequestConfig): AxiosResponse<T>
-  delete<T = any>(url: string, config?: AxiosRequestConfig): AxiosResponse<T>
-  options<T = any>(url: string, config?: AxiosRequestConfig): AxiosResponse<T>
-  post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): AxiosResponse<T>
-  put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): AxiosResponse<T>
-  patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): AxiosResponse<T>
+  request<T = any>(config: AxiosRequestConfig): AxiosPromise<T>
+
+  get<T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
+
+  delete<T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
+
+  head<T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
+
+  options<T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
+
+  post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise<T>
+
+  put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise<T>
+
+  patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise<T>
+
+  getUri(config?: AxiosRequestConfig): string
 }
 
 export interface AxiosInstance extends Axios {
@@ -73,22 +90,31 @@ export interface AxiosInstance extends Axios {
   <T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
 }
 
+export interface AxiosClassStatic {
+  new (config: AxiosRequestConfig): Axios
+}
+
 export interface AxiosStatic extends AxiosInstance {
-  create(config: AxiosRequestConfig): AxiosInstance
+  create(config?: AxiosRequestConfig): AxiosInstance
 
-  cancelToken: CancelTokenStatic
-
-  cancel: CancelStatic
-
+  CancelToken: CancelTokenStatic
+  Cancel: CancelStatic
   isCancel: (value: any) => boolean
+
+  all<T>(promises: Array<T | Promise<T>>): Promise<T[]>
+  spread<T, R>(callback: (...args: T[]) => R): (arr: T[]) => R
+  Axios: AxiosClassStatic
 }
 
 export interface AxiosInterceptorManager<T> {
-  use(resolved: ResolvedFn<T>, rejected: RejectedFn): number // 每次创建一个拦截器会返回一个参数，用于以后删除
+  // 返回值的 number 是这个 interceptor 的 ID 用于 eject 的时候删除此 interceptor
+  use(resolved: ResolvedFn<T>, rejected?: RejectedFn): number
+
+  eject(id: number): void
 }
 
 export interface ResolvedFn<T> {
-  (val: T): T | Promise<T> // 同步或者异步
+  (val: T): T | Promise<T>
 }
 
 export interface RejectedFn {
@@ -107,7 +133,7 @@ export interface CancelToken {
 }
 
 export interface Canceler {
-  (message: string): void
+  (message?: string): void
 }
 
 export interface CancelExecutor {
@@ -121,6 +147,7 @@ export interface CancelTokenSource {
 
 export interface CancelTokenStatic {
   new (executor: CancelExecutor): CancelToken
+  source(): CancelTokenSource
 }
 
 export interface Cancel {

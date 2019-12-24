@@ -1,4 +1,4 @@
-import dispatchRequest from './dispatchRequest'
+import dispatchRequest, { transformURL } from './dispatchRequest'
 import {
   AxiosRequestConfig,
   AxiosPromise,
@@ -103,6 +103,11 @@ export default class Axios {
 
   patch(url: string, config: AxiosRequestConfig, data?: any): AxiosPromise {
     return this._requestMethodWithData('patch', url, config, data)
+  }
+
+  getUri(config?: AxiosRequestConfig): string {
+    config = mergeConfig(this.defaults, config)
+    return transformURL(config)
   }
 
   _requestMethodWithoutData(

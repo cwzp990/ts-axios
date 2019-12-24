@@ -25,7 +25,7 @@ function processConfig(config: AxiosRequestConfig): void {
   config.headers = flattenHeaders(headers, method!) // 需要添加的headers字段提取出来
 }
 
-function transformURL(config: AxiosRequestConfig): string {
+export function transformURL(config: AxiosRequestConfig): string {
   let { url, params, paramsSerializer, baseURL } = config
   if (baseURL && isAbsoluteURL(url!)) {
     // 相对地址且配置了baseUrl
