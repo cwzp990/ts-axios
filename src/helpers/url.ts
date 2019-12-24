@@ -1,4 +1,4 @@
-import { isObject, isDate } from './utils'
+import { isObject, isDate, isURLSearchParams } from './utils'
 
 interface URLOrigin {
   protocol: string
@@ -17,36 +17,50 @@ function encode(val: string): string {
 }
 
 // 构建url地址参数
-export function buildUrl(url: string, params?: any): string {
+export function buildUrl(
+  url: string,
+  params?: any,
+  paramsSerializer?: (params: any) => string
+): string {
   if (!params) return url
 
-  const parts: string[] = []
+  let serializedParams
 
-  Object.keys(params).forEach(key => {
-    const val = params[key]
+  if (paramsSerializer) {
+    // 自定义的规则
+    serializedParams = paramsSerializer(params)
+  } else if (isURLSearchParams(params)) {
+    serializedParams = params.toString()
+  } else {
+    const parts: string[] = []
 
-    // 空值跳出本次循环
-    if (val === null || typeof val === 'undefined') return
+    Object.keys(params).forEach(key => {
+      const val = params[key]
 
-    let values = []
-    if (Array.isArray(val)) {
-      values = val
-      key += '[]'
-    } else {
-      values = [val]
-    }
+      // 空值跳出本次循环
+      if (val === null || typeof val === 'undefined') return
 
-    values.forEach(val => {
-      if (isDate(val)) {
-        val = val.toISOString
-      } else if (isObject(val)) {
-        val = JSON.stringify(val)
+      let values = []
+      if (Array.isArray(val)) {
+        values = val
+        key += '[]'
+      } else {
+        values = [val]
       }
-      parts.push(`${encode(key)}=${encode(val)}`)
-    })
-  })
 
-  let serializedParams = parts.join('&')
+      values.forEach(val => {
+        if (isDate(val)) {
+          val = val.toISOString
+        } else if (isObject(val)) {
+          val = JSON.stringify(val)
+        }
+        parts.push(`${encode(key)}=${encode(val)}`)
+      })
+    })
+
+    serializedParams = parts.join('&')
+  }
+
   if (serializedParams) {
     const markIndex = url.indexOf('#')
     if (markIndex !== -1) {
